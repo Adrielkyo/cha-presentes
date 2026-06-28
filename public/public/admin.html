@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>😺 Admin — Chá da Gica e do Luquinhas</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f2f7ee;min-height:100vh}
+.app{max-width:480px;margin:0 auto;padding:0 0 40px}
+.header{background:linear-gradient(135deg,#3B6D11,#BA7517);padding:20px 16px;text-align:center}
+.header h1{color:#fff;font-size:20px;font-weight:700}
+.header p{color:#C0DD97;font-size:12px;margin-top:3px}
+.section{padding:16px}
+/* Login */
+.login-box{background:#fff;border:1px solid #FAC775;border-radius:16px;padding:30px 24px;text-align:center;margin-top:32px}
+.login-box .icon{font-size:52px;display:block;margin-bottom:12px}
+.login-box h2{font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:6px}
+.login-box p{font-size:13px;color:#888;margin-bottom:22px}
+.login-box input{width:100%;border:1.5px solid #C0DD97;border-radius:10px;padding:13px;font-size:17px;outline:none;text-align:center;color:#1a1a1a;margin-bottom:12px;letter-spacing:3px}
+.login-box input:focus{border-color:#3B6D11}
+.btn-login{width:100%;background:#3B6D11;color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:600;cursor:pointer}
+.btn-login:active{background:#27500A}
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{background:#fff;border:0.5px solid #C0DD97;border-radius:12px;padding:14px;text-align:center}
+.stat-num{font-size:32px;font-weight:700}
+.stat-num.green{color:#3B6D11}
+.stat-num.orange{color:#BA7517}
+.stat-label{font-size:12px;color:#5F5E5A;margin-top:2px}
+.progress-bar{height:9px;background:#EAF3DE;border-radius:99px;overflow:hidden;margin-bottom:8px}
+.progress-fill{height:100%;background:linear-gradient(90deg,#3B6D11,#EF9F27);border-radius:99px;transition:.6s}
+.progress-label{font-size:12px;color:#5F5E5A;text-align:center;margin-bottom:18px}
+/* Add form */
+.add-form{background:#fff;border:0.5px solid #C0DD97;border-radius:12px;padding:16px;margin-bottom:18px}
+.add-form h3{font-size:15px;font-weight:700;color:#3B6D11;margin-bottom:13px}
+.form-row{display:flex;gap:8px;margin-bottom:8px}
+.form-row input{flex:1;border:1.5px solid #C0DD97;border-radius:8px;padding:9px 10px;font-size:14px;outline:none;color:#1a1a1a;min-width:0}
+.form-row input:focus{border-color:#3B6D11}
+.upload-area{border:2px dashed #C0DD97;border-radius:10px;padding:14px;text-align:center;cursor:pointer;margin-bottom:8px;background:#f9fdf5}
+.upload-area:hover{border-color:#639922;background:#EAF3DE}
+.upload-area input{display:none}
+.upload-area .ue{font-size:26px}
+.upload-area p{font-size:13px;color:#5F5E5A;margin-top:4px}
+.preview-img{width:100%;max-height:130px;object-fit:cover;border-radius:8px;margin-bottom:8px;display:none}
+.btn-add{width:100%;background:#EF9F27;color:#fff;border:none;border-radius:9px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px}
+.btn-add:active{background:#BA7517}
+/* List */
+.section-title{font-size:12px;font-weight:700;color:#5F5E5A;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+.admin-item{background:#fff;border:0.5px solid #C0DD97;border-radius:10px;padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.admin-item.taken{border-color:#FAC775;background:#FFFBF5}
+.admin-item.free{background:#F7FCF3}
+.admin-thumb{width:44px;height:44px;border-radius:8px;flex-shrink:0;background:#EAF3DE;display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden}
+.admin-thumb img{width:100%;height:100%;object-fit:cover}
+.admin-info{flex:1;min-width:0}
+.admin-name{font-size:14px;font-weight:600;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-who{font-size:12px;color:#BA7517;margin-top:2px;font-weight:500}
+.admin-free{font-size:12px;color:#3B6D11;margin-top:2px;font-weight:500}
+.admin-meta{font-size:11px;color:#888;margin-top:1px}
+.status-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dot-green{background:#639922}
+.dot-orange{background:#EF9F27}
+.btn-remove{background:none;border:none;color:#ccc;font-size:22px;cursor:pointer;padding:2px 6px;flex-shrink:0}
+.btn-remove:hover{color:#E24B4A}
+.empty{text-align:center;padding:30px;color:#888;font-size:14px}
+.empty span{display:block;font-size:36px;margin-bottom:8px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:#27500A;color:#fff;padding:11px 22px;border-radius:99px;font-size:14px;font-weight:500;z-index:200;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.topbar h2{font-size:15px;font-weight:700;color:#3B6D11}
+.btn-logout{background:#fff;border:1px solid #C0DD97;color:#5F5E5A;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>😺 Painel Administrador</h1>
+    <p>Chá da Gica e do Luquinhas — área restrita</p>
+  </div>
+
+  <div class="section" id="login-section">
+    <div class="login-box">
+      <span class="icon">🔐</span>
+      <h2>Área Restrita</h2>
+      <p>Esta página é exclusiva para você,<br>organizadora do chá 🐱</p>
+      <input type="password" id="pin-input" placeholder="••••••" maxlength="20">
+      <button class="btn-login" onclick="doLogin()">Entrar 🐾</button>
+    </div>
+  </div>
+
+  <div id="admin-section" style="display:none" class="section">
+    <div class="topbar">
+      <h2>📋 Controle da lista</h2>
+      <button class="btn-logout" onclick="logout()">Sair</button>
+    </div>
+
+    <div class="add-form">
+      <h3>➕ Adicionar presente</h3>
+      <div class="form-row">
+        <input type="text" id="new-emoji" placeholder="Emoji 🎁" style="max-width:72px">
+        <input type="text" id="new-name" placeholder="Nome do presente">
+      </div>
+      <div class="form-row">
+        <input type="text" id="new-cat" placeholder="Categoria (ex: Cozinha)">
+        <input type="text" id="new-price" placeholder="Valor (ex: R$50)">
+      </div>
+      <div class="upload-area" onclick="document.getElementById('new-photo').click()">
+        <input type="file" id="new-photo" accept="image/*" onchange="previewPhoto(this)">
+        <div class="ue">📷</div>
+        <p>Toque para adicionar foto<br><small style="color:#aaa">opcional</small></p>
+      </div>
+      <img id="photo-preview" class="preview-img" alt="preview">
+      <button class="btn-add" onclick="addGift()">+ Adicionar à lista</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-num green" id="stat-free">0</div><div class="stat-label">Disponíveis</div></div>
+      <div class="stat-card"><div class="stat-num orange" id="stat-taken">0</div><div class="stat-label">Escolhidos</div></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+    <div class="progress-label" id="prog-label">0% dos presentes já têm dono!</div>
+
+    <div class="section-title">Situação completa em tempo real</div>
+    <div id="admin-list"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// =============================================
+// CONFIGURAÇÃO — troque a senha aqui!
+// =============================================
+const ADMIN_PIN = 'gica2025';
+const STORAGE_KEY = 'cha_gica_luquinhas_v1'; // deve ser IGUAL ao da página de convidados
+// =============================================
+
+const defaultGifts = [
+  {id:1,emoji:'🍳',name:'Frigideira antiaderente',cat:'Cozinha',price:'R$ 120',taken:false,by:'',img:''},
+  {id:2,emoji:'🫖',name:'Chaleira elétrica',cat:'Cozinha',price:'R$ 80',taken:false,by:'',img:''},
+  {id:3,emoji:'🧴',name:'Kit toalhas de banho',cat:'Banheiro',price:'R$ 90',taken:false,by:'',img:''},
+  {id:4,emoji:'🕯️',name:'Velas aromáticas (kit)',cat:'Decoração',price:'R$ 60',taken:false,by:'',img:''},
+  {id:5,emoji:'🛋️',name:'Almofadas decorativas',cat:'Sala',price:'R$ 70',taken:false,by:'',img:''},
+  {id:6,emoji:'🪴',name:'Vaso com planta',cat:'Decoração',price:'R$ 45',taken:false,by:'',img:''},
+  {id:7,emoji:'🍽️',name:'Jogo de pratos (6 pçs)',cat:'Cozinha',price:'R$ 150',taken:false,by:'',img:''},
+  {id:8,emoji:'🧺',name:'Cesto organizador',cat:'Organização',price:'R$ 55',taken:false,by:'',img:''},
+];
+
+let gifts=[], newPhotoData='', unlocked=false;
+
+function doLogin(){
+  const val=document.getElementById('pin-input').value;
+  if(val===ADMIN_PIN){
+    unlocked=true;
+    sessionStorage.setItem('cha_admin_ok','1');
+    document.getElementById('login-section').style.display='none';
+    document.getElementById('admin-section').style.display='block';
+    load(); setInterval(()=>{ load(true); }, 8000);
+  } else {
+    document.getElementById('pin-input').style.borderColor='#E24B4A';
+    document.getElementById('pin-input').value='';
+    setTimeout(()=>document.getElementById('pin-input').style.borderColor='',1200);
+    showToast('😿 Senha incorreta');
+  }
+}
+function logout(){
+  sessionStorage.removeItem('cha_admin_ok'); unlocked=false;
+  document.getElementById('login-section').style.display='block';
+  document.getElementById('admin-section').style.display='none';
+  document.getElementById('pin-input').value='';
+}
+function load(silent=false){
+  try{ const r=localStorage.getItem(STORAGE_KEY); gifts=r?JSON.parse(r):JSON.parse(JSON.stringify(defaultGifts)); }
+  catch(e){ gifts=JSON.parse(JSON.stringify(defaultGifts)); }
+  renderAdmin(); updateStats();
+}
+function save(){ try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(gifts)); }catch(e){} }
+function renderAdmin(){
+  const el=document.getElementById('admin-list');
+  if(gifts.length===0){el.innerHTML='<div class="empty"><span>😿</span>Nenhum presente ainda.</div>';return;}
+  el.innerHTML=gifts.map(g=>`<div class="admin-item ${g.taken?'taken':'free'}">
+    <div class="admin-thumb">${g.img?`<img src="${g.img}" alt="">`:`<span>${g.emoji}</span>`}</div>
+    <div class="admin-info">
+      <div class="admin-name">${g.name}</div>
+      ${g.taken?`<div class="admin-who">🐾 ${g.by}</div>`:`<div class="admin-free">✔ Disponível</div>`}
+      <div class="admin-meta">${g.cat}${g.price?' · '+g.price:''}</div>
+    </div>
+    <div class="status-dot ${g.taken?'dot-orange':'dot-green'}"></div>
+    <button class="btn-remove" onclick="removeGift(${g.id})">×</button>
+  </div>`).join('');
+}
+function updateStats(){
+  const taken=gifts.filter(g=>g.taken).length, free=gifts.length-taken;
+  const pct=gifts.length?Math.round(taken/gifts.length*100):0;
+  document.getElementById('stat-free').textContent=free;
+  document.getElementById('stat-taken').textContent=taken;
+  document.getElementById('prog').style.width=pct+'%';
+  document.getElementById('prog-label').textContent=pct+'% dos presentes já têm dono! 🐱';
+}
+function previewPhoto(input){
+  const file=input.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{ newPhotoData=e.target.result; const p=document.getElementById('photo-preview'); p.src=newPhotoData; p.style.display='block'; };
+  reader.readAsDataURL(file);
+}
+function addGift(){
+  const name=document.getElementById('new-name').value.trim();
+  if(!name){showToast('😿 Informe o nome do presente');return;}
+  gifts.push({id:Date.now(),emoji:document.getElementById('new-emoji').value.trim()||'🎁',name,cat:document.getElementById('new-cat').value.trim()||'Geral',price:document.getElementById('new-price').value.trim(),taken:false,by:'',img:newPhotoData});
+  save(); renderAdmin(); updateStats();
+  ['new-emoji','new-name','new-cat','new-price','new-photo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('photo-preview').style.display='none'; newPhotoData='';
+  showToast('😸 Presente adicionado!');
+}
+function removeGift(id){
+  if(!confirm('Remover este presente da lista?'))return;
+  gifts=gifts.filter(g=>g.id!==id); save(); renderAdmin(); updateStats();
+  showToast('Presente removido.');
+}
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+document.getElementById('pin-input').addEventListener('keydown',e=>{ if(e.key==='Enter')doLogin(); });
+// Auto-login se sessão ainda ativa
+if(sessionStorage.getItem('cha_admin_ok')==='1'){ document.getElementById('pin-input').value=ADMIN_PIN; doLogin(); }
+</script>
+</body>
+</html>
