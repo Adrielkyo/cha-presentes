@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏡 Chá da Gica e do Luquinhas</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f2f7ee;min-height:100vh}
+.app{max-width:480px;margin:0 auto;padding:0 0 40px}
+.header{padding:0;text-align:center;position:relative;overflow:hidden}
+.header-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(20,40,10,.35),rgba(10,30,5,.6))}
+.header-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+.header h1{color:#fff;font-size:21px;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.4)}
+.header p{color:#C0DD97;font-size:13px;margin-top:5px;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.paw{font-size:12px;color:#FAC775;margin-top:7px;letter-spacing:3px}
+.section{padding:16px}
+.cat-banner{background:#FAEEDA;border:1px solid #FAC775;border-radius:12px;padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.cat-banner span{font-size:26px;flex-shrink:0}
+.cat-banner p{font-size:13px;color:#854F0B;line-height:1.5}
+.section-title{font-size:12px;font-weight:700;color:#5F5E5A;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
+.gift-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gift-card{background:#fff;border:0.5px solid #C0DD97;border-radius:14px;overflow:hidden;transition:.2s;cursor:pointer;display:flex;flex-direction:column}
+.gift-card:active{transform:scale(.97)}
+.gift-card:hover{border-color:#639922;box-shadow:0 4px 16px rgba(59,109,17,.13)}
+.gift-img{width:100%;height:150px;object-fit:cover;display:block}
+.gift-img-placeholder{width:100%;height:150px;background:linear-gradient(135deg,#EAF3DE,#C0DD97);display:flex;align-items:center;justify-content:center;font-size:56px}
+.gift-body{padding:10px 11px 12px;flex:1;display:flex;flex-direction:column}
+.gift-name{font-size:13px;font-weight:700;color:#1a1a1a;line-height:1.3;margin-bottom:2px}
+.gift-cat{font-size:11px;color:#888;margin-bottom:4px}
+.gift-price{font-size:13px;color:#3B6D11;font-weight:700;margin-bottom:8px}
+.btn-choose{background:#3B6D11;color:#fff;border:none;border-radius:8px;padding:8px 0;font-size:13px;font-weight:600;cursor:pointer;width:100%;transition:.15s;margin-top:auto}
+.btn-choose:active{background:#27500A}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:18px;padding:24px;width:100%;max-width:340px;animation:popIn .18s ease;max-height:90vh;overflow-y:auto}
+@keyframes popIn{from{transform:scale(.93);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-img{width:100%;height:150px;object-fit:cover;border-radius:10px;margin-bottom:14px;display:block}
+.modal-emoji-big{font-size:52px;text-align:center;margin-bottom:12px}
+.modal-cat{font-size:11px;font-weight:700;color:#BA7517;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.modal h3{font-size:17px;font-weight:700;color:#1a1a1a;margin-bottom:14px}
+.modal label{font-size:13px;color:#5F5E5A;display:block;margin-bottom:6px;font-weight:500}
+.modal input{width:100%;border:1.5px solid #C0DD97;border-radius:10px;padding:11px 13px;font-size:15px;outline:none;color:#1a1a1a;transition:.2s}
+.modal input:focus{border-color:#3B6D11;box-shadow:0 0 0 3px rgba(59,109,17,.1)}
+.modal-btns{display:flex;gap:8px;margin-top:16px}
+.btn-confirm{flex:1;background:#3B6D11;color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:600;cursor:pointer}
+.btn-cancel{flex:1;background:#f0f0f0;color:#5F5E5A;border:none;border-radius:10px;padding:12px;font-size:14px;cursor:pointer;font-weight:500}
+.empty{text-align:center;padding:40px 20px;color:#888;font-size:14px}
+.empty span{display:block;font-size:44px;margin-bottom:10px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:#27500A;color:#fff;padding:11px 22px;border-radius:99px;font-size:14px;font-weight:500;z-index:200;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <svg viewBox="0 0 480 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:140px;display:block">
+      <defs>
+        <radialGradient id="sun" cx="80%" cy="30%" r="30%"><stop offset="0%" stop-color="#fff9c4" stop-opacity=".9"/><stop offset="100%" stop-color="#fff9c4" stop-opacity="0"/></radialGradient>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#b8daf5"/><stop offset="100%" stop-color="#dff0fb"/></linearGradient>
+        <linearGradient id="hill1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5a8c2a"/><stop offset="100%" stop-color="#3d6b1a"/></linearGradient>
+        <linearGradient id="hill2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4a7a20"/><stop offset="100%" stop-color="#2e5510"/></linearGradient>
+        <linearGradient id="hill3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6aaa35"/><stop offset="100%" stop-color="#4a8020"/></linearGradient>
+        <linearGradient id="pathg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c8a84b"/><stop offset="100%" stop-color="#a07830"/></linearGradient>
+      </defs>
+      <rect width="480" height="140" fill="url(#sky)"/>
+      <ellipse cx="390" cy="30" rx="55" ry="40" fill="url(#sun)"/>
+      <circle cx="390" cy="28" r="14" fill="#fff9c4" opacity=".95"/>
+      <ellipse cx="80" cy="22" rx="35" ry="10" fill="#fff" opacity=".7"/><ellipse cx="65" cy="24" rx="22" ry="8" fill="#fff" opacity=".7"/>
+      <ellipse cx="240" cy="18" rx="28" ry="8" fill="#fff" opacity=".55"/>
+      <path d="M0,95 Q60,55 130,80 Q200,100 260,65 Q320,35 400,70 Q440,85 480,72 L480,140 L0,140 Z" fill="url(#hill1)"/>
+      <path d="M0,110 Q70,80 150,100 Q230,118 300,90 Q360,68 430,95 Q455,105 480,98 L480,140 L0,140 Z" fill="url(#hill2)"/>
+      <path d="M0,125 Q80,105 170,118 Q260,130 330,112 Q390,98 480,115 L480,140 L0,140 Z" fill="url(#hill3)"/>
+      <ellipse cx="108" cy="88" rx="16" ry="10" fill="#5a3a1a"/><ellipse cx="108" cy="88" rx="13" ry="8" fill="#2d1a08"/><circle cx="108" cy="85" r="3" fill="#c8a84b"/><ellipse cx="108" cy="88" rx="16" ry="10" fill="none" stroke="#8B5e2a" stroke-width="2.5"/>
+      <circle cx="88" cy="93" r="3" fill="#ff6b6b"/><circle cx="95" cy="91" r="2.5" fill="#ffcc44"/><circle cx="80" cy="96" r="2" fill="#ff9eff"/>
+      <line x1="68" y1="100" x2="68" y2="94" stroke="#c8a84b" stroke-width="1.5"/><line x1="74" y1="100" x2="74" y2="93" stroke="#c8a84b" stroke-width="1.5"/><line x1="60" y1="100" x2="60" y2="95" stroke="#c8a84b" stroke-width="1.5"/><line x1="57" y1="97" x2="78" y2="95" stroke="#c8a84b" stroke-width="1"/>
+      <ellipse cx="340" cy="75" rx="13" ry="8" fill="#5a3a1a"/><ellipse cx="340" cy="75" rx="10" ry="6" fill="#2d1a08"/><circle cx="340" cy="73" r="2.5" fill="#c8a84b"/><ellipse cx="340" cy="75" rx="13" ry="8" fill="none" stroke="#8B5e2a" stroke-width="2"/>
+      <rect x="178" y="68" width="5" height="22" fill="#5a3a1a"/><ellipse cx="180" cy="62" rx="14" ry="16" fill="#2e6b10"/><ellipse cx="180" cy="58" rx="10" ry="12" fill="#3a8a18"/>
+      <rect x="148" y="73" width="4" height="18" fill="#5a3a1a"/><ellipse cx="150" cy="67" rx="11" ry="13" fill="#336614"/>
+      <path d="M200,140 Q220,118 215,100 Q212,88 230,78" fill="none" stroke="url(#pathg)" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+    </svg>
+    <div class="header-overlay"></div>
+    <div class="header-content">
+      <h1>🏡 Chá da Gica e do Luquinhas</h1>
+      <p>Obrigado por fazer parte deste momento 🐱🐱🐶</p>
+      <div class="paw">🐾 🐾 🐾</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="cat-banner"><span>😸</span><p>Escolha um presente para trazer! Após confirmar, o item some para os outros convidados.</p></div>
+    <div class="section-title">Presentes disponíveis</div>
+    <div id="gift-list"></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div id="modal-img-wrap"></div>
+    <div class="modal-cat">🐾 Reservar presente</div>
+    <h3 id="modal-title"></h3>
+    <label>Seu nome completo:</label>
+    <input type="text" id="guest-name" placeholder="Ex: Maria Silva" autocomplete="name">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmChoice()">Confirmar! 🎉</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+// =============================================
+// STORAGE KEY — deve ser IGUAL no admin
+// =============================================
+const STORAGE_KEY = 'cha_gica_luquinhas_v1';
+
+const defaultGifts = [
+  {id:1,emoji:'🍳',name:'Frigideira antiaderente',cat:'Cozinha',price:'R$ 120',taken:false,by:'',img:''},
+  {id:2,emoji:'🫖',name:'Chaleira elétrica',cat:'Cozinha',price:'R$ 80',taken:false,by:'',img:''},
+  {id:3,emoji:'🧴',name:'Kit toalhas de banho',cat:'Banheiro',price:'R$ 90',taken:false,by:'',img:''},
+  {id:4,emoji:'🕯️',name:'Velas aromáticas (kit)',cat:'Decoração',price:'R$ 60',taken:false,by:'',img:''},
+  {id:5,emoji:'🛋️',name:'Almofadas decorativas',cat:'Sala',price:'R$ 70',taken:false,by:'',img:''},
+  {id:6,emoji:'🪴',name:'Vaso com planta',cat:'Decoração',price:'R$ 45',taken:false,by:'',img:''},
+  {id:7,emoji:'🍽️',name:'Jogo de pratos (6 pçs)',cat:'Cozinha',price:'R$ 150',taken:false,by:'',img:''},
+  {id:8,emoji:'🧺',name:'Cesto organizador',cat:'Organização',price:'R$ 55',taken:false,by:'',img:''},
+];
+
+let gifts=[], pendingId=null;
+
+function load(){
+  try{ const r=localStorage.getItem(STORAGE_KEY); gifts=r?JSON.parse(r):JSON.parse(JSON.stringify(defaultGifts)); }
+  catch(e){ gifts=JSON.parse(JSON.stringify(defaultGifts)); }
+  render();
+}
+function save(){ try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(gifts)); }catch(e){} }
+function render(){
+  const el=document.getElementById('gift-list');
+  const free=gifts.filter(g=>!g.taken);
+  if(free.length===0){ el.innerHTML='<div class="empty"><span>🎉</span>Todos os presentes já foram escolhidos!<br>Que festa incrível vai ser!</div>'; return; }
+  el.innerHTML='<div class="gift-grid">'+free.map(g=>`<div class="gift-card" onclick="openModal(${g.id})">
+    ${g.img?`<img class="gift-img" src="${g.img}" alt="${g.name}">`:`<div class="gift-img-placeholder">${g.emoji}</div>`}
+    <div class="gift-body">
+      <div class="gift-name">${g.name}</div>
+      <div class="gift-cat">${g.cat}</div>
+      ${g.price?`<div class="gift-price">${g.price}</div>`:''}
+      <button class="btn-choose" onclick="event.stopPropagation();openModal(${g.id})">Quero! 🐾</button>
+    </div></div>`).join('')+'</div>';
+}
+function openModal(id){
+  const g=gifts.find(x=>x.id===id); if(!g||g.taken)return;
+  pendingId=id;
+  const wrap=document.getElementById('modal-img-wrap');
+  wrap.innerHTML=g.img?`<img class="modal-img" src="${g.img}" alt="${g.name}">`:`<div class="modal-emoji-big">${g.emoji}</div>`;
+  document.getElementById('modal-title').textContent=g.name+(g.price?' — '+g.price:'');
+  document.getElementById('guest-name').value='';
+  document.getElementById('modal').classList.add('open');
+  setTimeout(()=>document.getElementById('guest-name').focus(),150);
+}
+function closeModal(){ document.getElementById('modal').classList.remove('open'); pendingId=null; }
+function confirmChoice(){
+  const name=document.getElementById('guest-name').value.trim();
+  if(!name){ document.getElementById('guest-name').style.borderColor='#E24B4A'; setTimeout(()=>document.getElementById('guest-name').style.borderColor='',1200); return; }
+  const g=gifts.find(x=>x.id===pendingId); if(!g)return;
+  g.taken=true; g.by=name; save(); closeModal(); render();
+  showToast('🎉 '+name+' vai trazer: '+g.emoji+' '+g.name);
+}
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
+document.getElementById('modal').addEventListener('click',e=>{ if(e.target===document.getElementById('modal'))closeModal(); });
+document.getElementById('guest-name').addEventListener('keydown',e=>{ if(e.key==='Enter')confirmChoice(); });
+// Atualiza a cada 8 segundos para pegar escolhas de outros
+load(); setInterval(()=>{ try{ const r=localStorage.getItem(STORAGE_KEY); if(r){gifts=JSON.parse(r);render();} }catch(e){} }, 8000);
+</script>
+</body>
+</html>
